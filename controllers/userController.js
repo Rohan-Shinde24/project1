@@ -2,9 +2,6 @@ const { User, Customer } = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const joi = require("joi");
 const { generateToken } = require("../utils/authjwtUtils");
-const { sendMailes } = require("../services/emailServices");
-const genOtp = require("../utils/codegenUtil");
-
 
 
 const registeredSchema = joi.object({
@@ -12,15 +9,6 @@ const registeredSchema = joi.object({
   email: joi.string().email().required(),
   password: joi.string().min(3).required(),
 });
-
-const forgoatPasswordSchema = joi.object({
-    email: joi.string().email().required(),
-})
-
-const resetPasswordSchema = joi.object({
-  email: joi.string().email().required(),
-  newPassword :  joi.string().min(3).required(),
-})
 
 
 async function registerUser(req, res) {
@@ -69,57 +57,9 @@ async function loginUser(req, res) {
   }
 }
 
-async function forgoatPassword(req, res) {
-  try {
-    const { email } = forgoatPasswordSchema.validate(req.body);
-
-    const user = await User.findOne({ email: email });
-    if (!user) {
-      res.status(400).json({ message: "email not exist " });
-    }
-    const otp = genOtp();
-
-    User.verificationcode = otp;
-    await user.save();
-    sendMailes({to : email, otp});
-
-    res.status(200).json({message : "OTP is send to your email"})
-   
-  } catch (err) {
-    res.status(500).json({ message: "interneal server error", err });
-  }
-}
-
-async function resetPassword (req, res) {
-  try{
-    const {email, otp , newPassword } = resetPasswordSchema.validate(req.body);
-
-    const user = await User.findOne({email:email});
-    if(!user){
-      res.status(400).json({message : " user not register"})
-    }
-
-    if(verificationcode == otp){
-      res.status(200).json({message : "otp is correct"})
-    }
-    const hashedPassword = bcrypt.hash(newPassword, 12)
-
-    User.password = newPassword;
-    User.verificationcode = null;
-
-     await user.save()
-
-     res.status(200).json({message: "Password change sucessfully"})
-
-  } 
-  catch(err) {
-      res.status(400).json({message: "Internal server err", err})
-  }
-}
 
 module.exports = {
   registerUser,
   loginUser,
-  forgoatPassword,
-  resetPassword
+  
 };
