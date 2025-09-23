@@ -8,6 +8,7 @@ const registeredSchema = joi.object({
   name: joi.string().min(3).max(30).required(),
   email: joi.string().email().required(),
   password: joi.string().min(3).required(),
+  role: joi.string().valid('admin', 'customer').optional()
 });
 
 
@@ -17,7 +18,7 @@ async function registerUser(req, res) {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
@@ -28,9 +29,11 @@ async function registerUser(req, res) {
       name,
       email,
       password: hashedPassword,
+      role,
+
     });
     await newUser.save();
-    return res.status(201).json({ message: "User registered successfully" });
+    return res.status(201).json({ message: "User registered successfully", newUser });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal server error", err });

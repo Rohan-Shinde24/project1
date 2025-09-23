@@ -21,13 +21,7 @@ const userSchema = new Schema(
       enum: ["admin", "customer"],
       default: "customer",
     },
-    verificationcode: {
-      type: Number,
-    },
-    isverified: {
-      type: Boolean,
-    
-    },
+ 
   },
   { timestamps: true }
 );
