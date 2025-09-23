@@ -1,3 +1,4 @@
+const e = require("express");
 const product = require("../models/productModle");
 
 async function createProduct(req, res) {
@@ -10,9 +11,7 @@ async function createProduct(req, res) {
     });
   } catch (error) {
     res.status(500).json({
-      message: "Internal server error",
-      error: error.message,
-    });
+      message: "Internal server error",error });
   }
 }
 
@@ -21,16 +20,14 @@ async function AllProducts(req, res) {
     const products = await product.find().populate("category");
     res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error });
   }
 }
 
 async function deletedproduct(req, res) {
   try {
     const { productID } = req.body;
-    const deletedProduct = await product.findOneAndDelete({
-      productID: productID,
-    });
+    const deletedProduct = await product.findOneAndDelete({ productID: productID });
     if (!deletedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -38,33 +35,20 @@ async function deletedproduct(req, res) {
       .status(200)
       .json({ message: "Product deleted successfully", deletedProduct });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error });
   }
 }
 
 async function updateProduct(req, res) {
   try {
-    const { productID, ...updateData } = req.body;
-
-    const updatedProduct = await product.findOneAndUpdate(
-      { productID: productID },
-      updateData,
-      { new: true }
-    );
-
+    const { productID } = req.body;
+    const updatedProduct = await product.findOneAndUpdate({ productID: productID }, req.body);
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
-
-    res.status(200).json({
-      message: "Product updated successfully",
-      updatedProduct
-    });
   } catch (error) {
     res.status(500).json({
-      message: "Internal server error",
-      error: error.message
-    });
+      message: "Internal server error", error });
   }
 }
 

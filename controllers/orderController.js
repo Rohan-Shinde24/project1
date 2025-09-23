@@ -33,18 +33,14 @@ async function deleteOrder(req, res) {
 
 async function updateOrder(req, res) {
  try {
-    const { orderID, ...updateData } = req.body;
-     const updatedOrder = await order.findOneAndUpdate(
-      { orderID: orderID },
-      updateData,
-      { new: true } 
-    );
+    const {orderID} = req.body;
+    const updatedOrder = await order.findOneAndUpdate({ orderID : orderID }, req.body);
     if (!updatedOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
     res.status(200).json({ message: "Order updated successfully", updatedOrder });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", });
+    res.status(500).json({ message: "Internal server error", error });
   }
 }
 
