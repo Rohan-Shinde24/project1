@@ -3,14 +3,12 @@ const bcrypt = require("bcrypt");
 const joi = require("joi");
 const { generateToken } = require("../utils/authjwtUtils");
 
-
 const registeredSchema = joi.object({
   name: joi.string().min(3).max(30).required(),
   email: joi.string().email().required(),
   password: joi.string().min(3).required(),
-  role: joi.string().valid('admin', 'customer').optional()
+  role: joi.string(),
 });
-
 
 async function registerUser(req, res) {
   try {
@@ -30,10 +28,11 @@ async function registerUser(req, res) {
       email,
       password: hashedPassword,
       role,
-
     });
     await newUser.save();
-    return res.status(201).json({ message: "User registered successfully", newUser });
+    return res
+      .status(201)
+      .json({ message: "User registered successfully", newUser });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal server error", err });
@@ -60,9 +59,27 @@ async function loginUser(req, res) {
   }
 }
 
+async function updateProfile(req, res) {
+  try {
+    const { email } = req.body;
+    const { name, phone, address, pin } = req.body;
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email },
+      { customerID, name, phone, address, pin }
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({ message: "Profile updated successfully", updatedUser });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error", err });
+  }
+}
 
 module.exports = {
   registerUser,
   loginUser,
-  
+  updateProfile,
 };

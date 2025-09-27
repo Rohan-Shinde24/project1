@@ -38,7 +38,7 @@ async function deleteCategory(req, res) {
   try {
     const { id } = req.body;
     const deletedCategory = await category.findByIdAndUpdate({ _id: id }, req.body, { isDeleted: true });
-    if (!deletedCategory) {
+    if (!deletedCategory) { 
       return res.status(404).json({ message: "Category not found" });
     }
     res.status(200).json({ message: "Category deleted successfully", deletedCategory });
