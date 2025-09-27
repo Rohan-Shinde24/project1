@@ -26,16 +26,17 @@ async function AllProducts(req, res) {
 
 async function deletedproduct(req, res) {
   try {
-    const { productID } = req.body;
-    const deletedProduct = await product.findOneAndDelete({ productID: productID });
+    const { id } = req.body;
+    const deletedProduct = await product.findByIdAndUpdate(
+      { _id: id },
+      { isDeleted: true }
+    );
     if (!deletedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
-    res
-      .status(200)
-      .json({ message: "Product deleted successfully", deletedProduct });
+    return res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", error });
+    return res.status(500).json({ message: "Internal server error", error });
   }
 }
 

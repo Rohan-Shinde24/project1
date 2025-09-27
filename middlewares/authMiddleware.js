@@ -24,14 +24,12 @@ function authMiddleware(req, res, next) {
 }
 
 function adminMiddleware(req, res, next) {
-  try{
-      
-    const role = req.user.role;
+  try {
 
-    if ( role !== 'admin') {
-      return res.status(401).json({ message: "only admin can access " });
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Access denied only admin can access" });
     }
-      next();
+    next();
   } catch (error) {
     return res.status(500).json({ message: "Internal server error", error });
   }

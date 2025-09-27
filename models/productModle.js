@@ -1,4 +1,4 @@
-const { Schema, model, default: mongoose } = require("mongoose");
+const { Schema, model , mongoose} = require("mongoose");
 
 const productSchema = new Schema({
   productID: {
@@ -28,6 +28,10 @@ const productSchema = new Schema({
     type: Number,
     required: true,
     min: 0,
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
   },
 }, { timestamps: true });
 

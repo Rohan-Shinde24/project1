@@ -18,40 +18,41 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "customer"],
+      enum: ["admin", "Customer"],
       required : true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
  
   },
-  { timestamps: true }
+  { discriminatorKey: "role", timestamps: true }
 );
 
 const User = model("User", userSchema);
 
-const customerSchema = new Schema({
+const Customer = User.discriminator("Customer", new Schema({
   customerID: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
-  },
-  name: {
-    type: String,
-    required: true,
   },
   phone: {
     type: String,
-    required: true,
+    required: false,
   },
   address: {
     type: String,
-    required: true,
+    required: false,
   },
   pin: {
     type: String,
-    required: true,
+    required: false,
   },
-});
+  
+},))
 
-const Customer = User.discriminator("Customer", customerSchema);
+
 
 module.exports = { User, Customer };
